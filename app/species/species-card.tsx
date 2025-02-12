@@ -22,6 +22,7 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { createBrowserSupabaseClient } from "@/lib/client-utils";
@@ -182,7 +183,7 @@ export default function SpeciesCard({
         </DialogTrigger>
       </div>
 
-      <DialogContent>
+      <DialogContent className="max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {/* Displays the scientific name of the species if exists.*/}
@@ -204,6 +205,7 @@ export default function SpeciesCard({
             />
           </div>
         )}
+
         <div className="mt-4 space-y-3">
           <h3 className="text-lg font-semibold">Species Information</h3>
           <p>
@@ -219,9 +221,9 @@ export default function SpeciesCard({
             {/* Displays the description of the species if exists.*/}
             <strong>Description:</strong> {species.description ?? "No description available."}
           </p>
-        </div>
 
-        <div className="mt-4 space-y-3">
+          <Separator className="my-4" />
+
           <h3 className="text-lg font-semibold">Author Information</h3>
           <p>
             {/* Displays the display name of the author if exists.*/}
@@ -237,17 +239,24 @@ export default function SpeciesCard({
           </p>
         </div>
 
+        {/* Only show these buttons if user is the author */}
         {sessionId === species.author && (
           <div className="mt-4 flex gap-2">
+            {/* Opens the edit species dialog */}
             <DialogTrigger asChild>
               <Button onClick={() => setEditOpen(true)} type="submit" className="ml-1 mr-1 flex-auto">
                 Edit Species
               </Button>
             </DialogTrigger>
+
+            {/* Deletes the species */}
             <Button
               variant="secondary"
               className="flex-1"
               onClick={() => {
+                {
+                  /* Ensures delete function occurs */
+                }
                 void handleDeleteSpecies();
               }}
             >
@@ -257,6 +266,7 @@ export default function SpeciesCard({
         )}
       </DialogContent>
 
+      {/* Edit Species Dialog */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="max-h-screen overflow-y-auto sm:max-w-[600px]">
           <DialogHeader>
@@ -265,6 +275,8 @@ export default function SpeciesCard({
               Edit a species here. Click &quot;Edit Species&quot; below when you&apos;re done.
             </DialogDescription>
           </DialogHeader>
+
+          {/* Editing form */}
           <Form {...form}>
             <form onSubmit={(e: BaseSyntheticEvent) => void form.handleSubmit(handleEditSubmit)(e)}>
               <div className="grid w-full items-center gap-4">

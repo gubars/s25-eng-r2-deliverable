@@ -32,7 +32,9 @@ import { useRouter } from "next/navigation";
 import { useState, type BaseSyntheticEvent } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
 type Species = Database["public"]["Tables"]["species"]["Row"];
+type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
 // We use zod (z) to define a schema for the "Add species" form.
 // zod handles validation of the input values with methods like .string(), .nullable(). It also processes the form inputs with .transform() before the inputs are sent to the database.
@@ -77,7 +79,15 @@ All form fields should be set to non-undefined default values.
 Read more here: https://legacy.react-hook-form.com/api/useform/
 */
 
-export default function SpeciesCard({ species, sessionId }: { species: Species; sessionId: string }) {
+export default function SpeciesCard({
+  species,
+  author,
+  sessionId,
+}: {
+  species: Species;
+  author: Profile;
+  sessionId: string;
+}) {
   const router = useRouter();
 
   // Control open/closed state of the dialog
@@ -195,6 +205,7 @@ export default function SpeciesCard({ species, sessionId }: { species: Species; 
           </div>
         )}
         <div className="mt-4 space-y-3">
+          <h3 className="text-lg font-semibold">Species Information</h3>
           <p>
             {/* Displays the kingdom of the species if exists.*/}
             <strong>Kingdom:</strong> {species.kingdom ?? "No kingdom available."}
@@ -207,6 +218,22 @@ export default function SpeciesCard({ species, sessionId }: { species: Species; 
           <p>
             {/* Displays the description of the species if exists.*/}
             <strong>Description:</strong> {species.description ?? "No description available."}
+          </p>
+        </div>
+
+        <div className="mt-4 space-y-3">
+          <h3 className="text-lg font-semibold">Author Information</h3>
+          <p>
+            {/* Displays the display name of the author if exists.*/}
+            <strong>Display Name:</strong> {author.display_name ?? "No display name available."}
+          </p>
+          <p>
+            {/* Displays the email of the author if exists.*/}
+            <strong>Email:</strong> {author.email ?? "No email address available."}
+          </p>
+          <p>
+            {/* Displays the biography of the author if exists.*/}
+            <strong>Biography:</strong> {author.biography ?? "No biography available."}
           </p>
         </div>
 

@@ -88,18 +88,22 @@ export default function AddSpeciesDialog({ userId }: { userId: string }) {
     mode: "onChange",
   });
 
+  // Interface for search response
   interface WikipediaSearchResponse {
     query?: {
       search: { title: string }[];
     };
   }
 
+  // Interface for page response
   interface WikipediaPageResponse {
     extract?: string;
     thumbnail?: { source: string };
   }
 
+  // Interface for search response
   const fetchWikipediaData = async (query: string) => {
+    // Ensures theres an actual query
     if (!searchQuery.trim()) {
       return toast({
         title: "Error",
@@ -109,6 +113,7 @@ export default function AddSpeciesDialog({ userId }: { userId: string }) {
     }
 
     try {
+      // Performs search for users query
       const searchRes = await fetch(
         `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(
           query,
@@ -116,27 +121,32 @@ export default function AddSpeciesDialog({ userId }: { userId: string }) {
       );
       const searchData = (await searchRes.json()) as WikipediaSearchResponse;
 
+      // Takes the first matching page title from the search
       const pageTitle = searchData.query?.search?.[0]?.title;
+
+      // If no page found, throws error
       if (!pageTitle) {
         return toast({
           title: "No results found.",
-          description: "Could not find a Wikipedia article for this species.",
+          description: "Could not find a Wikipedia article.",
           variant: "destructive",
         });
       }
 
+      // Information from best matching page
       const pageRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(pageTitle)}`);
       const pageData = (await pageRes.json()) as WikipediaPageResponse;
 
+      // Fetches description and image from best matching page
       const description: string = pageData.extract ?? "No description available.";
       const image: string | null = pageData.thumbnail?.source ?? null;
 
-      // Step 5: Autofill form fields
+      // Fills in the form based on these best matches
       form.setValue("description", description);
       form.setValue("image", image);
 
-      // Notify user
-      toast({ title: "Data retrieved!", description: `Found data for ${pageTitle}.`, variant: "default" });
+      // Informs the user that data was found
+      toast({ title: "Data found!", description: `Found data for ${pageTitle}.`, variant: "default" });
     } catch (error) {
       console.error("Error fetching Wikipedia data:", error);
       toast({ title: "Error", description: "Failed to fetch data from Wikipedia.", variant: "destructive" });
@@ -201,6 +211,7 @@ export default function AddSpeciesDialog({ userId }: { userId: string }) {
           </DialogDescription>
         </DialogHeader>
 
+        {/*Search bar and button*/}
         <div className="mb-4 flex gap-2">
           <Input
             type="text"
